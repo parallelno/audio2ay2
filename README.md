@@ -14,24 +14,29 @@ and [design/ROADMAP.md](design/ROADMAP.md).
 ## Install (Windows / PowerShell)
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
 ```
 
 ## Usage
 
 ```powershell
+# activate the venv first (once per terminal session)
+.\.venv\Scripts\Activate.ps1
+```
+
+```powershell
 # audio -> 50 Hz register stream (+ optional mp3 preview)
-audio2ay convert samples\short\01_arpeggio_mono.wav -o out.ay --preview out.mp3
+audio2ay2 convert samples\short\01_arpeggio_mono.wav -o out.ay --preview out.mp3
 
 # render a stream back to audio
-audio2ay preview out.ay -o out.mp3
+audio2ay2 preview out.ay -o out.mp3
 
 # convert + compare + validation report (audio + loss plot + score)
-audio2ay validate samples\short\01_arpeggio_mono.wav -o reports\arp
+audio2ay2 validate samples\short\01_arpeggio_mono.wav -o reports\arp
 
 # inspect a stream
-audio2ay info out.ay
+audio2ay2 info out.ay
 ```
 
 Key options for `convert`: `--format raw|psg|ym`, `--profile balanced|melodic|percussive`,

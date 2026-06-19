@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from audio2ay.ay.registers import AYState, USE_ENV
-from audio2ay.ay.emulator import AYEmulator
-from audio2ay.ay.timing import Timing
+from audio2ay2.ay.registers import AYState, USE_ENV
+from audio2ay2.ay.emulator import AYEmulator
+from audio2ay2.ay.timing import Timing
 
 
 def test_register_roundtrip_identity():

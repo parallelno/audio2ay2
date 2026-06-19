@@ -2,13 +2,13 @@
 
 import numpy as np
 
-from audio2ay.ay.registers import AYState
-from audio2ay.ay.timing import Timing
-from audio2ay.ay.emulator import AYEmulator
-from audio2ay.config import Config
-from audio2ay.optimizer.moves import DefaultMoves
-from audio2ay.optimizer.temporal import semantic_distance
-from audio2ay.similarity.loss import PerceptualLoss
+from audio2ay2.ay.registers import AYState
+from audio2ay2.ay.timing import Timing
+from audio2ay2.ay.emulator import AYEmulator
+from audio2ay2.config import Config
+from audio2ay2.optimizer.moves import DefaultMoves
+from audio2ay2.optimizer.temporal import semantic_distance
+from audio2ay2.similarity.loss import PerceptualLoss
 
 
 def test_loss_zero_for_identical_audio():
@@ -57,7 +57,7 @@ def test_semantic_distance_grows_with_pitch_change():
 
 
 def test_end_to_end_tiny_conversion():
-    from audio2ay.pipeline import convert_pcm
+    from audio2ay2.pipeline import convert_pcm
 
     timing = Timing()
     # Synthesize a simple 0.4s AY tone as the "source" to convert.

@@ -16,7 +16,7 @@ from ..ay.timing import DEFAULT_CLOCK_HZ, DEFAULT_FPS
 
 def write_ym(path: str | Path, states: list[AYState],
              clock_hz: int = DEFAULT_CLOCK_HZ, fps: int = DEFAULT_FPS,
-             title: str = "audio2ay", author: str = "audio2ay",
+             title: str = "audio2ay2", author: str = "audio2ay2",
              comment: str = "analysis-by-synthesis") -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

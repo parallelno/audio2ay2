@@ -1,8 +1,8 @@
 """Tests for export/import round-trips (raw, PSG) and compression."""
 
-from audio2ay.ay.registers import AYState, USE_ENV
-from audio2ay.export import write_raw, read_raw, write_psg, read_psg, write_ym
-from audio2ay.export.compression import rle_encode, rle_ratio
+from audio2ay2.ay.registers import AYState, USE_ENV
+from audio2ay2.export import write_raw, read_raw, write_psg, read_psg, write_ym
+from audio2ay2.export.compression import rle_encode, rle_ratio
 
 
 def _sample_stream():

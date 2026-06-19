@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "audio2ay"
+name = "audio2ay2"
 version = "0.1.0"
 description = "Convert instrumental audio into AY-3-8910 register streams via analysis-by-synthesis."
 readme = "README.md"
@@ -23,7 +23,7 @@ ml = ["torch>=2.1"]
 dev = ["pytest>=7.4"]
 
 [project.scripts]
-audio2ay = "audio2ay.cli:main"
+audio2ay2 = "audio2ay2.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

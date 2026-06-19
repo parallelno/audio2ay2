@@ -1,4 +1,4 @@
-"""audio2ay command-line interface.
+"""audio2ay2 command-line interface.
 
 Commands: convert, preview, validate, info. See design/ARCHITECTURE.md s.6.
 """
@@ -28,8 +28,8 @@ def _add_common(p: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="audio2ay", description=__doc__)
-    parser.add_argument("--version", action="version", version=f"audio2ay {__version__}")
+    parser = argparse.ArgumentParser(prog="audio2ay2", description=__doc__)
+    parser.add_argument("--version", action="version", version=f"audio2ay2 {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     c = sub.add_parser("convert", help="audio -> register stream")
