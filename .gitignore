@@ -1,0 +1,20 @@
+# Build outputs
+build/*
+!build/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.pytest_cache/
+
+# Virtual environment
+.venv/
+
+# Generated artifacts
+*.ay
+*.psg
+*.ym
+out/
+reports/
