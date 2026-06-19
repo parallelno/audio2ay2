@@ -100,7 +100,10 @@ def cmd_convert(args) -> int:
     timing = Timing(clock_hz=args.clock, fps=args.fps, sample_rate=args.samplerate)
     config = _config_from_args(args)
 
-    with tqdm(total=4, desc="convert", unit="stage", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}]") as pbar:
+    import time
+    t0 = time.monotonic()
+    with tqdm(total=4, desc="convert", unit="stage", position=1,
+               bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}]") as pbar:
         pbar.set_postfix(stage="load")
         pcm = load_audio(args.input, timing.sample_rate)
         tqdm.write(f"[convert] {pcm.shape[0] / timing.sample_rate:.1f}s @ {timing.sample_rate} Hz; "
@@ -135,6 +138,9 @@ def cmd_convert(args) -> int:
             tqdm.write(f"[convert] report -> {args.report} ({summary})")
         pbar.update(1)
 
+    elapsed = time.monotonic() - t0
+    m, s = divmod(int(elapsed), 60)
+    print(f"[convert] done in {m}m {s:02d}s")
     return 0
 
 

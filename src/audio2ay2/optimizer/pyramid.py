@@ -61,7 +61,7 @@ def run_pyramid(pcm: np.ndarray, features: list, timing: Timing,
             level_losses: list[float] = []
             blocks = list(_blocks(n, block))
             desc = f"level {level + 1}/{len(scales)} ({scale_ms}ms blocks)"
-            with tqdm(blocks, desc=desc, unit="blk", leave=True) as pbar:
+            with tqdm(blocks, desc=desc, unit="blk", leave=True, position=0) as pbar:
                 for b0, b1 in pbar:
                     window = features[b0:b1]
                     s0, s1 = b0 * hop, min(b1 * hop, pcm.shape[0])
