@@ -18,7 +18,7 @@ from .config import Config
 from .optimizer.moves import DefaultMoves
 from .optimizer.pyramid import run_pyramid
 from .optimizer.stabilize import stabilize
-from .optimizer.strategies import make_strategy
+from .optimizer.strategies import make_strategy, StrategySpec
 from .similarity.loss import PerceptualLoss
 
 
@@ -45,8 +45,7 @@ def convert_pcm(pcm: np.ndarray, timing: Timing, config: Config) -> ConvertResul
     loss.configure(pcm, ay_fullscale_rms(renderer))
     moves = DefaultMoves()
 
-    def strategy_factory():
-        return make_strategy(config.optimizer, config.iters, seed=config.seed)
+    strategy_factory = StrategySpec(config.optimizer, config.iters, seed=config.seed)
 
     states, finest_losses = run_pyramid(
         pcm=pcm, features=features, timing=timing, renderer=renderer, loss=loss,
@@ -54,6 +53,7 @@ def convert_pcm(pcm: np.ndarray, timing: Timing, config: Config) -> ConvertResul
         proposals=config.proposals, pyramid_ms=tuple(config.pyramid_ms),
         temporal_weight=config.temporal_weight,
         complexity_weight=config.complexity_weight,
+        workers=config.workers,
     )
     states = stabilize(states, width=config.stabilize)
     return ConvertResult(states=states, timing=timing, finest_losses=finest_losses)

@@ -40,3 +40,17 @@ class Renderer:
 
     def cache_info(self):
         return self._cached.cache_info()
+
+    # -- pickling support (for ProcessPoolExecutor) -----------------------
+
+    def __getstate__(self):
+        return {
+            "timing": self.timing,
+            "chip": self.chip,
+            "cache_size": self._cached.cache_info().maxsize,
+        }
+
+    def __setstate__(self, state):
+        self.timing = state["timing"]
+        self.chip = state["chip"]
+        self._cached = lru_cache(maxsize=state["cache_size"])(self._render_key)

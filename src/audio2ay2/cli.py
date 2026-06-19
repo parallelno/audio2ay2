@@ -46,6 +46,8 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--stabilize", type=int, default=3,
                    help="post median-smoothing width (frames); 0/1 disables")
     c.add_argument("--seed", type=int, default=0)
+    c.add_argument("--workers", type=int, default=0,
+                   help="parallel threads for multi-start (0 = one per proposal)")
     c.add_argument("--preview", default=None, help="also render result to this mp3/wav")
     c.add_argument("--report", default=None, help="write validation report to this dir")
     _add_common(c)
@@ -84,6 +86,7 @@ def _config_from_args(args) -> Config:
         stabilize=getattr(args, "stabilize", 3),
         seed=args.seed,
         chip=args.chip,
+        workers=getattr(args, "workers", 0),
     )
 
 
@@ -91,36 +94,47 @@ def cmd_convert(args) -> int:
     from .audioio import load_audio
     from .pipeline import convert_pcm
     from .export import write_stream
+    from tqdm import tqdm
 
     seed_everything(args.seed)
     timing = Timing(clock_hz=args.clock, fps=args.fps, sample_rate=args.samplerate)
     config = _config_from_args(args)
 
-    print(f"[convert] loading {args.input}")
-    pcm = load_audio(args.input, timing.sample_rate)
-    print(f"[convert] {pcm.shape[0] / timing.sample_rate:.1f}s @ {timing.sample_rate} Hz; "
-          f"optimizer={config.optimizer} proposals={config.proposals} "
-          f"pyramid={config.pyramid_ms or 'off'}")
+    with tqdm(total=4, desc="convert", unit="stage", bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}]") as pbar:
+        pbar.set_postfix(stage="load")
+        pcm = load_audio(args.input, timing.sample_rate)
+        tqdm.write(f"[convert] {pcm.shape[0] / timing.sample_rate:.1f}s @ {timing.sample_rate} Hz; "
+                   f"optimizer={config.optimizer} proposals={config.proposals} "
+                   f"pyramid={config.pyramid_ms or 'off'}")
+        pbar.update(1)
 
-    result = convert_pcm(pcm, timing, config)
-    out = args.output or (str(Path(args.input).with_suffix("." + args.format)))
-    write_stream(out, result.states, args.format, timing.clock_hz, timing.fps)
-    mean_loss = (sum(result.finest_losses) / len(result.finest_losses)
-                 if result.finest_losses else 0.0)
-    print(f"[convert] wrote {out} ({len(result.states)} frames, "
-          f"mean block loss {mean_loss:.4f})")
+        pbar.set_postfix(stage="optimize")
+        result = convert_pcm(pcm, timing, config)
+        pbar.update(1)
 
-    if args.preview:
-        from .preview.render import write_preview
-        write_preview(args.preview, result.states, timing, config.chip)
-        print(f"[convert] preview -> {args.preview}")
+        pbar.set_postfix(stage="export")
+        out = args.output or (str(Path(args.input).with_suffix("." + args.format)))
+        write_stream(out, result.states, args.format, timing.clock_hz, timing.fps)
+        mean_loss = (sum(result.finest_losses) / len(result.finest_losses)
+                     if result.finest_losses else 0.0)
+        tqdm.write(f"[convert] wrote {out} ({len(result.states)} frames, "
+                   f"mean block loss {mean_loss:.4f})")
+        pbar.update(1)
 
-    if args.report:
-        from .similarity.loss import PerceptualLoss
-        from .report.validate import write_report
-        loss = PerceptualLoss(timing.sample_rate, config.resolved_weights())
-        summary = write_report(args.report, pcm, result.states, timing, loss, config.chip)
-        print(f"[convert] report -> {args.report} ({summary})")
+        pbar.set_postfix(stage="preview/report")
+        if args.preview:
+            from .preview.render import write_preview
+            write_preview(args.preview, result.states, timing, config.chip)
+            tqdm.write(f"[convert] preview -> {args.preview}")
+
+        if args.report:
+            from .similarity.loss import PerceptualLoss
+            from .report.validate import write_report
+            loss = PerceptualLoss(timing.sample_rate, config.resolved_weights())
+            summary = write_report(args.report, pcm, result.states, timing, loss, config.chip)
+            tqdm.write(f"[convert] report -> {args.report} ({summary})")
+        pbar.update(1)
+
     return 0
 
 

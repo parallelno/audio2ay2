@@ -60,6 +60,7 @@ class Config:
     stabilize: int = DEFAULT_STABILIZE
     seed: int = 0
     chip: str = "ay"
+    workers: int = 0
     weights: dict[str, float] = field(default_factory=dict)
 
     def resolved_weights(self) -> dict[str, float]:
